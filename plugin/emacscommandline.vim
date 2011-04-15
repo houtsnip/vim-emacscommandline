@@ -1,5 +1,3 @@
-" Command-mode options
-"
 " Make more like emacs
 cnoremap <C-A> <Home>
 cnoremap <C-E> <End>
@@ -8,29 +6,27 @@ cnoremap <C-F> <Right>
 cnoremap <C-P> <Up>
 cnoremap <C-N> <Down>
 cnoremap <Esc><C-R> <C-F>?
-cnoremap <Esc><C-A> <C-A>
-cnoremap <Esc><C-E> <C-E>
-cnoremap <Esc><C-B> <C-B>
-cnoremap <Esc><C-F> <C-F>
-cnoremap <Esc><C-P> <C-P>
-cnoremap <Esc><C-N> <C-N>
+cmap <M-C-R> <Esc><C-R>
 
 " Maps to old shortcuts using Ctrl-O as a prefix
-cnoremap <C-O><C-A> <C-A>
-cnoremap <C-O><C-E> <C-E>
-cnoremap <C-O><C-B> <C-B>
-cnoremap <C-O><C-F> <C-F>
-cnoremap <C-O><C-P> <C-P>
-cnoremap <C-O><C-D> <C-D>
-cnoremap <C-O><C-K> <C-K>
-cnoremap <C-O><C-U> <C-U>
-cnoremap <C-O><C-W> <C-W>
-cnoremap <C-O><C-Y> <C-Y>
-cnoremap <C-O><C-Z> <C-Z>
-cnoremap <C-O><Del> <Del>
-cnoremap <C-O><BS>  <BS>
+cnoremap <C-O><C-A>      <C-A>
+cnoremap <C-O><C-E>      <C-E>
+cnoremap <C-O><C-B>      <C-B>
+cnoremap <C-O><C-F>      <C-F>
+cnoremap <C-O><C-P>      <C-P>
+cnoremap <C-O><C-D>      <C-D>
+cnoremap <C-O><C-K>      <C-K>
+cnoremap <C-O><C-U>      <C-U>
+cnoremap <C-O><C-W>      <C-W>
+cnoremap <C-O><C-Y>      <C-Y>
+cnoremap <C-O><C-Z>      <C-Z>
+cnoremap <C-O><C-_>      <C-_>
+cnoremap <C-O><C-X><C-U> <C-X><C-U>
+cnoremap <C-O><Del>      <Del>
+cnoremap <C-O><BS>       <BS>
 
 cnoremap <Esc>f <C-\>e<SID>ForwardWord()<CR>
+cmap <M-F> <Esc>f
 function! <SID>ForwardWord()
     let l:loc = strpart(getcmdline(), 0, getcmdpos() - 1)
     let l:roc = strpart(getcmdline(), getcmdpos() - 1)
@@ -47,6 +43,7 @@ function! <SID>ForwardWord()
 endfunction
 
 cnoremap <Esc>b <C-\>e<SID>BackwardWord()<CR>
+cmap <M-B> <Esc>b
 function! <SID>BackwardWord()
     let l:loc = strpart(getcmdline(), 0, getcmdpos() - 1)
     let l:roc = strpart(getcmdline(), getcmdpos() - 1)
@@ -121,6 +118,7 @@ function! <SID>BackwardKillLine()
 endfunction
 
 cnoremap <Esc>d <C-\>e<SID>KillWord()<CR>
+cmap <M-D> <Esc>d
 function! <SID>KillWord()
     call <SID>saveUndoHistory(getcmdline(), getcmdpos())
     let l:loc = strpart(getcmdline(), 0, getcmdpos() - 1)
@@ -157,13 +155,14 @@ function! <SID>DeleteBackwardsToWhiteSpace()
     endif
     let @c = l:rem
     let l:pos = getcmdpos() - strlen(l:rem)
-    let l:ret strpart(l:loc, 0, strlen(l:loc) - strlen(l:rem)) . l:roc
+    let l:ret = strpart(l:loc, 0, strlen(l:loc) - strlen(l:rem)) . l:roc
     call <SID>saveUndoHistory(l:ret, l:pos)
     call setcmdpos(l:pos)
     return l:ret
 endfunction
 
 cnoremap <Esc><BS> <C-\>e<SID>BackwardKillWord()<CR>
+cmap <M-BS> <Esc><BS>
 function! <SID>BackwardKillWord()
     " Do same as in-built Ctrl-W, except assign deleted text to @c
     call <SID>saveUndoHistory(getcmdline(), getcmdpos())
@@ -217,6 +216,7 @@ function! <SID>saveUndoHistory(cmdline, cmdpos)
     endif
 endfunction
 cnoremap <C-_> <C-\>e<SID>Undo()<CR>
+cmap <C-X><C-U> <C-_>
 function! <SID>Undo()
     if len(s:oldcmdline) == 0
         return getcmdline()

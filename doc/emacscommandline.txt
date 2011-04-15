@@ -1,0 +1,52 @@
+*emacscommandline.txt*  Emacs-style (and bash-style) mappings for command-line
+                      mode
+
+Author:  Houtsnip <nstraigohttreedsitcph-githuab@yahmoo.co.uk>
+                                                *emacscommandline-author*
+License: Same terms as Vim itself (see |license|)
+
+INTRODUCTION                                    *emacscommandline*
+
+This plugin makes the command-line mode behave more like the bash command
+line, by adding Emacs-style mappings (like in the Bash shell).
+
+MOVEMENT                                        *emacscommandline-movement*
+
+*CTRl-A*         move cursor to beginning of line
+*CTRl-E*         move cursor to end of line
+*CTRl-B*         move cursor one character backwards
+*CTRl-F*         move cursor one character forwards
+*META-B*         move cursor one word backwards
+*META-F*         move cursor one word forwards
+
+DELETION                                        *emacscommandline-deletion*
+
+*CTRl-D*         delete character under cursor
+*CTRl-K*         kill line (delete from character under cursor to end of line)
+*CTRl-U*         backwards kill line (delete backwards to beginning of line)
+*META-D*         delete word under cursor
+*META-Backspace* delete word backwards
+*CTRL-W*         delete backwards to next white-space character
+
+HISTORY                                         *emacscommandline-history*
+
+*CTRl-P*         previous line in history
+*CTRl-N*         next line in history
+*META-CTRl-R*    search history backwards
+
+OTHER                                           *emacscommandline-other*
+
+*CTRl-Y*         paste (yank) last deleted text
+*CTRl-_*         undo last change
+*CTRl-X_CTRL-U*   "    "    "
+*CTRl-Z*         toggle command-line as external command
+
+
+*WARNING*
+
+This plugin buggers up the expression register (i.e. |c_CTRL-R_=|).  This is
+a limitation of vim.  I don't know how to switch these mappings off in the
+expression register and I don't think it's possible. However I never use the
+expression register except in mappings, so it doesn't affect me.
+
+ vim:tw=78:et:ft=help:norl:
