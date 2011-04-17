@@ -1,12 +1,11 @@
 " Make more like emacs
 cnoremap <C-A> <Home>
-cnoremap <C-E> <End>
 cnoremap <C-B> <Left>
 cnoremap <C-F> <Right>
 cnoremap <C-P> <Up>
 cnoremap <C-N> <Down>
-cnoremap <Esc><C-R> <C-F>?
-cmap <M-C-R> <Esc><C-R>
+cnoremap <Esc>r <C-F>?
+cmap <M-R> <Esc>r
 
 " Maps to old shortcuts using Ctrl-O as a prefix
 cnoremap <C-O><C-A>      <C-A>
@@ -210,6 +209,8 @@ let s:oldcmdline = [ ]
 function! <SID>saveUndoHistory(cmdline, cmdpos)
     if len(s:oldcmdline) == 0 || a:cmdline != s:oldcmdline[0][0]
         call insert(s:oldcmdline, [ a:cmdline, a:cmdpos ], 0)
+    else
+        let s:oldcmdline[0][1] = a:cmdpos
     endif
     if len(s:oldcmdline) > 100
         call remove(s:oldcmdline, 100)

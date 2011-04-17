@@ -1,21 +1,24 @@
-*emacscommandline.txt*  Emacs-style (and bash-style) mappings for command-line
-                      mode
+*emacscommandline.txt*  Emacs- (or Bash-) style mappings for command-line mode
 
-Author:  Houtsnip <nstraigohttreedsitcph-githuab@yahmoo.co.uk>
+Author:  Houtsnip <NstraigOhttreedSitcPh-githuAb@yahMoo.co.uk>
                                                 *emacscommandline-author*
 License: Same terms as Vim itself (see |license|)
 
 INTRODUCTION                                    *emacscommandline*
 
-This plugin makes the command-line mode behave more like the bash command
-line, by adding Emacs-style mappings (like in the Bash shell).
+This plugin makes the command-line mode behave more like the Unix command
+line, by adding Emacs-style mappings (like in the Bash shell).  Some of the
+mappings just map existing vim commands, but the rest implement functionality
+that is not available natively.
 
 MOVEMENT                                        *emacscommandline-movement*
 
 *CTRl-A*         move cursor to beginning of line
-*CTRl-E*         move cursor to end of line
+*CTRl-E*         move cursor to end of line (i.e the native vim behaviour:
+                 see |c_CTRL-E|).  Not actually a re-mapping, but noted here
+                 anyway for completeness.
 *CTRl-B*         move cursor one character backwards
-*CTRl-F*         move cursor one character forwards
+*CTRl-F*         move cursor one character forwards (overwrites |c_CTRL-F|)
 *META-B*         move cursor one word backwards
 *META-F*         move cursor one word forwards
 
@@ -23,24 +26,39 @@ DELETION                                        *emacscommandline-deletion*
 
 *CTRl-D*         delete character under cursor
 *CTRl-K*         kill line (delete from character under cursor to end of line)
+                 (overwrites insert digraph: see |c_CTRL-K|.  This is a shame,
+                 but personally I don't use this much in command-line mode.)
 *CTRl-U*         backwards kill line (delete backwards to beginning of line)
+                 (i.e. the same behaviour as in Bash: unix-line-discard)
 *META-D*         delete word under cursor
 *META-Backspace* delete word backwards
-*CTRL-W*         delete backwards to next white-space character
+*CTRL-W*         delete backwards to previous white-space character
+                 (i.e. the same behaviour as in Bash: unix-word-rubout)
 
 HISTORY                                         *emacscommandline-history*
 
-*CTRl-P*         previous line in history
-*CTRl-N*         next line in history
-*META-CTRl-R*    search history backwards
+*CTRl-P*         previous line in history (same as <Up>)
+*CTRl-N*         next line in history (same as <Down>)
+*META-R*         search history backwards
+                 (It would be nice to use the mapping CTRL-R, but this is
+                 already used for insert register: see |c_CTRL-R|.)
 
 OTHER                                           *emacscommandline-other*
 
-*CTRl-Y*         paste (yank) last deleted text
-*CTRl-_*         undo last change
+*CTRl-Y*         paste (yank) last deleted text (overwrites |c_CTRL-Y|).
+                 Note that in Emacs, 'yank' means 'paste', whereas in vim it
+                 means 'copy'.  The same text is also available in the
+                 registry 'c'.
+*CTRl-_*         undo last change (overwrites |c_CTRL-_|)
 *CTRl-X_CTRL-U*   "    "    "
-*CTRl-Z*         toggle command-line as external command
+*CTRl-Z*         toggle command-line as external command (overwrites suspend
+                 vim in the terminal)
 
+OLD KEYS                                        *emacscommandline-old-keys*
+
+The old functions are all mapped to the same combination prefixed by CTRL-O.
+So for example, to open the command-line window (see |c_CTRL-F|), press
+instead CTRL-O_CTRL-F. 
 
 *WARNING*
 
