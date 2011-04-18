@@ -58,7 +58,7 @@ OLD KEYS                                        *emacscommandline-old-keys*
 
 The old functions are all mapped to the same combination prefixed by CTRL-O.
 So for example, to open the command-line window (see |c_CTRL-F|), press
-instead CTRL-O_CTRL-F. 
+instead CTRL-O_CTRL-F.
 
 *WARNING*
 
