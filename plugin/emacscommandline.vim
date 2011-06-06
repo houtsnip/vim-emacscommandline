@@ -63,12 +63,14 @@ cnoremap <Del> <C-\>e<SID>DeleteChar()<CR>
 cmap <C-D> <Del>
 function! <SID>DeleteChar()
     call <SID>saveUndoHistory(getcmdline(), getcmdpos())
-    let l:cmd = getcmdline()
-    let l:rem = strpart(l:cmd, getcmdpos() - 1, 1)
+    let l:cmd     = getcmdline()
+    " Get length of character to be deleted (in bytes)
+    let l:charlen = strlen(substitute(strpart(l:cmd, getcmdpos() - 1), '^\(.\).*', '\1', ''))
+    let l:rem     = strpart(l:cmd, getcmdpos() - 1, l:charlen)
     if ('' != l:rem)
         let @c = l:rem
     endif
-    let l:ret = strpart(l:cmd, 0, getcmdpos() - 1) . strpart(l:cmd, getcmdpos())
+    let l:ret = strpart(l:cmd, 0, getcmdpos() - 1) . strpart(l:cmd, getcmdpos() + l:charlen - 1)
     call <SID>saveUndoHistory(l:ret, getcmdpos())
     return l:ret
 endfunction
@@ -79,11 +81,13 @@ function! <SID>BackwardDeleteChar()
     if (getcmdpos() < 2)
         return getcmdline()
     endif
-    let l:cmd = getcmdline()
-    let l:rem = strpart(l:cmd, getcmdpos() - 2, 1)
-    let @c    = l:rem
-    let l:pos = getcmdpos() - 1
-    let l:ret = strpart(l:cmd, 0, getcmdpos() - 2) . strpart(l:cmd, getcmdpos() - 1)
+    let l:cmd     = getcmdline()
+    " Get length of character to be deleted (in bytes)
+    let l:charlen = strlen(substitute(strpart(l:cmd, 0, getcmdpos() - 1), '.*\(.\)$', '\1', ''))
+    let l:pos     = getcmdpos() - l:charlen
+    let l:rem     = strpart(l:cmd, getcmdpos() - l:charlen - 1, l:charlen)
+    let @c        = l:rem
+    let l:ret     = strpart(l:cmd, 0, l:pos - 1) . strpart(l:cmd, getcmdpos() - 1)
     call <SID>saveUndoHistory(l:ret, l:pos)
     call setcmdpos(l:pos)
     return l:ret
