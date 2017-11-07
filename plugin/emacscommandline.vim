@@ -12,7 +12,8 @@ let s:mappings = {
     \'EndOfLine':                ['<C-E>', '<End>'],
     \'OlderMatchingCommandLine': ['<C-P>', '<Up>'],
     \'NewerMatchingCommandLine': ['<C-N>', '<Down>'],
-    \'SearchCommandLine':        ['<M-r>', '<C-F>?']
+    \'SearchCommandLine':        ['<M-r>', '<C-F>?'],
+    \'AbortCommand':             ['<C-G>', '<C-C>']
     \}
 if !has('gui_running') && !has('nvim')
     let s:mappings['SearchCommandLine'][0] = '<Esc>r'
