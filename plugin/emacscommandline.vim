@@ -4,6 +4,21 @@ endif
 if !exists('g:EmacsCommandLineOldMapPrefix')
     let g:EmacsCommandLineOldMapPrefix = '<C-O>'
 endif
+if !exists('g:EmacsCommandLineSearchCommandLineMapOnlyWhenEmpty')
+    let g:EmacsCommandLineSearchCommandLineMapOnlyWhenEmpty = 1
+endif
+if !exists('g:EmacsCommandLineForwardCharNoMapAtEnd')
+    let g:EmacsCommandLineForwardCharNoMapAtEnd = 1
+endif
+if !exists('g:EmacsCommandLineEndOfLineNoMapAtEnd')
+    let g:EmacsCommandLineEndOfLineNoMapAtEnd = 1
+endif
+if !exists('g:EmacsCommandLineDeleteCharNoMapAtEnd')
+    let g:EmacsCommandLineDeleteCharNoMapAtEnd = 1
+endif
+if !exists('g:EmacsCommandLineKillLineNoMapAtEnd')
+    let g:EmacsCommandLineKillLineNoMapAtEnd = 1
+endif
 
 let s:mappings = {
     \'ForwardChar':              ['<C-F>', '<Right>'],
@@ -12,27 +27,36 @@ let s:mappings = {
     \'EndOfLine':                ['<C-E>', '<End>'],
     \'OlderMatchingCommandLine': ['<C-P>', '<Up>'],
     \'NewerMatchingCommandLine': ['<C-N>', '<Down>'],
-    \'SearchCommandLine':        ['<M-r>', '<C-F>?'],
+    \'SearchCommandLine':        ['<C-R>', '<C-F>?'],
     \'AbortCommand':             ['<C-G>', '<C-C>']
     \}
-if !has('gui_running') && !has('nvim')
-    let s:mappings['SearchCommandLine'][0] = '<Esc>r'
-endif
 for s:key in keys(s:mappings)
-    if !exists('g:EmacsCommandLine' . s:key . 'Disable') || g:EmacsCommandLine{s:key}Disable != 0
+    if !exists('g:EmacsCommandLine' . s:key . 'Disable') || g:EmacsCommandLine{s:key}Disable != 1
         let s:{s:key}MapDefined = exists('g:EmacsCommandLine' . s:key . 'Map')
         if !s:{s:key}MapDefined
             let g:EmacsCommandLine{s:key}Map = s:mappings[s:key][0]
         endif
         if type(g:EmacsCommandLine{s:key}Map) == 3
             for s:mapping in g:EmacsCommandLine{s:key}Map
-                exe 'cnoremap ' . s:mapping . ' ' . s:mappings[s:key][1]
+                if exists('g:EmacsCommandLine' . s:key . 'MapOnlyWhenEmpty') && g:EmacsCommandLine{s:key}MapOnlyWhenEmpty == 1
+                    exe 'cnoremap <expr> ' . s:mapping . ' strlen(getcmdline())>0?''' . s:mapping . ''':''' . s:mappings[s:key][1] . ''''
+                elseif exists('g:EmacsCommandLine' . s:key . 'NoMapAtEnd') && g:EmacsCommandLine{s:key}NoMapAtEnd == 1
+                    exe 'cnoremap <expr> ' . s:mapping . ' getcmdpos()>strlen(getcmdline())?''' . s:mapping . ''':''' . s:mappings[s:key][1] . ''''
+                else
+                    exe 'cnoremap ' . s:mapping . ' ' . s:mappings[s:key][1]
+                endif
                 if maparg(g:EmacsCommandLineOldMapPrefix . s:mapping, 'c') == ''
                     exe 'cnoremap ' . g:EmacsCommandLineOldMapPrefix . s:mapping . ' ' . s:mapping
                 endif
             endfor
         else
-            exe 'cnoremap ' . g:EmacsCommandLine{s:key}Map . ' ' . s:mappings[s:key][1]
+            if exists('g:EmacsCommandLine' . s:key . 'MapOnlyWhenEmpty') && g:EmacsCommandLine{s:key}MapOnlyWhenEmpty == 1
+                exe 'cnoremap <expr> ' . g:EmacsCommandLine{s:key}Map . ' strlen(getcmdline())>0?''' . g:EmacsCommandLine{s:key}Map . ''':''' . s:mappings[s:key][1] . ''''
+            elseif exists('g:EmacsCommandLine' . s:key . 'NoMapAtEnd') && g:EmacsCommandLine{s:key}NoMapAtEnd == 1
+                exe 'cnoremap <expr> ' . g:EmacsCommandLine{s:key}Map . ' getcmdpos()>strlen(getcmdline())?''' . g:EmacsCommandLine{s:key}Map . ''':''' . s:mappings[s:key][1] . ''''
+            else
+                exe 'cnoremap ' . g:EmacsCommandLine{s:key}Map . ' ' . s:mappings[s:key][1]
+            endif
             if maparg(g:EmacsCommandLineOldMapPrefix . g:EmacsCommandLine{s:key}Map, 'c') == ''
                 exe 'cnoremap ' . g:EmacsCommandLineOldMapPrefix . g:EmacsCommandLine{s:key}Map . ' ' . g:EmacsCommandLine{s:key}Map
             endif
@@ -263,20 +287,32 @@ if !has('gui_running') && !has('nvim')
     let s:functions['BackwardKillWord'] = '<Esc><BS>'
 endif
 for s:key in keys(s:functions)
-    if !exists('g:EmacsCommandLine' . s:key . 'Disable') || g:EmacsCommandLine{s:key}Disable != 0
+    if !exists('g:EmacsCommandLine' . s:key . 'Disable') || g:EmacsCommandLine{s:key}Disable != 1
         let s:{s:key}MapDefined = exists('g:EmacsCommandLine' . s:key . 'Map')
         if !s:{s:key}MapDefined
             let g:EmacsCommandLine{s:key}Map = s:functions[s:key]
         endif
         if type(g:EmacsCommandLine{s:key}Map) == 3
             for s:mapping in g:EmacsCommandLine{s:key}Map
-                exe 'cnoremap ' . s:mapping . ' <C-\>e<SID>' . s:key . '()<CR>'
+                if exists('g:EmacsCommandLine' . s:key . 'MapOnlyWhenEmpty') && g:EmacsCommandLine{s:key}MapOnlyWhenEmpty == 1
+                    exe 'cnoremap <expr> ' . s:mapping . ' strlen(getcmdline())>0?''' . s:mapping . ''':''<C-\>e<SID>' . s:key . '()<CR>'''
+                elseif exists('g:EmacsCommandLine' . s:key . 'NoMapAtEnd') && g:EmacsCommandLine{s:key}NoMapAtEnd == 1
+                    exe 'cnoremap <expr> ' . s:mapping . ' getcmdpos()>strlen(getcmdline())?''' . s:mapping . ''':''<C-\>e<SID>' . s:key . '()<CR>'''
+                else
+                    exe 'cnoremap ' . s:mapping . ' <C-\>e<SID>' . s:key . '()<CR>'
+                endif
                 if maparg(g:EmacsCommandLineOldMapPrefix . s:mapping, 'c') == ''
                     exe 'cnoremap ' . g:EmacsCommandLineOldMapPrefix . s:mapping . ' ' . s:mapping
                 endif
             endfor
         else
-            exe 'cnoremap ' . g:EmacsCommandLine{s:key}Map . ' <C-\>e<SID>' . s:key . '()<CR>'
+            if exists('g:EmacsCommandLine' . s:key . 'MapOnlyWhenEmpty') && g:EmacsCommandLine{s:key}MapOnlyWhenEmpty == 1
+                exe 'cnoremap <expr> ' . g:EmacsCommandLine{s:key}Map . ' strlen(getcmdline())>0?''' . g:EmacsCommandLine{s:key}Map . ''':''<C-\>e<SID>' . s:key . '()<CR>'''
+            elseif exists('g:EmacsCommandLine' . s:key . 'NoMapAtEnd') && g:EmacsCommandLine{s:key}NoMapAtEnd == 1
+                exe 'cnoremap <expr> ' . g:EmacsCommandLine{s:key}Map . ' getcmdpos()>strlen(getcmdline())?''' . g:EmacsCommandLine{s:key}Map . ''':''<C-\>e<SID>' . s:key . '()<CR>'''
+            else
+                exe 'cnoremap ' . g:EmacsCommandLine{s:key}Map . ' <C-\>e<SID>' . s:key . '()<CR>'
+            endif
             if maparg(g:EmacsCommandLineOldMapPrefix . g:EmacsCommandLine{s:key}Map, 'c') == ''
                 exe 'cnoremap ' . g:EmacsCommandLineOldMapPrefix . g:EmacsCommandLine{s:key}Map . ' ' . g:EmacsCommandLine{s:key}Map
             endif
