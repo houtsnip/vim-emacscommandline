@@ -23,6 +23,17 @@ line, by adding Emacs-style mappings (like in the Bash shell).  Some of the
 mappings just map existing vim commands, but the rest implement functionality
 that is not available natively.
 
+There is another similar plugin (vim-rsi) which covers most of the same
+mappings, but there are differences between the two plugins.  vim-rsi —
+
+ • also creates mappings in insert mode
+ • doesn’t have undo functionality
+ • doesn’t ruin the expression register (see |emacscommandline-limit|)
+ • doesn’t distinguish between |CTRL-W| and |META-Backspace|
+ • uses the in-built vim behaviour for |META-B|, |META-F|, and |META-D|
+ • doesn’t map |CTRL-K| or |CTRL-R|
+ • has a mapping for transposing two characters
+
 MOVEMENT                                        *emacscommandline-movement*
 
 *CTRL-A*         Move cursor to beginning of line
@@ -71,8 +82,12 @@ DELETION                                        *emacscommandline-deletion*
 
 *META-Backspace* Delete word backwards
 
+                 (This is subtly different from |CTRL-W|.)
+
 *CTRL-W*         Delete backwards to previous white-space character
                  (i.e. the same behaviour as in Bash: unix-word-rubout)
+
+                 (This is subtly different from |META-Backspace|.)
 
 HISTORY                                         *emacscommandline-history*
 
@@ -80,7 +95,7 @@ HISTORY                                         *emacscommandline-history*
 
 *CTRL-N*         Next line in history (same as |c_<Down>|)
 
-*META-R*         Search history backwards
+*CTRL-R*         Search history backwards
 
                  (This mapping is only used when the command line is empty —
                   in which case it over-rides inserting registers,
@@ -97,6 +112,8 @@ OTHER                                           *emacscommandline-other*
 
 *CTRL-_*         Undo last change (over-rides |c_CTRL-_|)
 *CTRL-X_CTRL-U*   "    "    "
+
+                 (See also |g:EmacsCommandLineMaxUndoHistory|)
 
 *CTRL-G*         Abort command and go back to normal mode (same as |c_CTRL-C|)
 
@@ -128,26 +145,26 @@ All available options:
 
                              *g:EmacsCommandLine[Command]Disable*
                               number (default 0)
-  |g:EmacsCommandLineForwardCharDisable|
-  |g:EmacsCommandLineBackwardCharDisable|
-  |g:EmacsCommandLineBeginningOfLineDisable|
-  |g:EmacsCommandLineEndOfLineDisable|
-  |g:EmacsCommandLineOlderMatchingCommandLineDisable|
-  |g:EmacsCommandLineNewerMatchingCommandLineDisable|
-  |g:EmacsCommandLineSearchCommandLineDisable|
-  |g:EmacsCommandLineAbortCommanDisable|
-  |g:EmacsCommandLineForwardWordDisable|
-  |g:EmacsCommandLineBackwardWordDisable|
-  |g:EmacsCommandLineDeleteCharDisable|
-  |g:EmacsCommandLineBackwardDeleteCharDisable|
-  |g:EmacsCommandLineKillLineDisable|
-  |g:EmacsCommandLineBackwardKillLineDisable|
-  |g:EmacsCommandLineKillWordDisable|
-  |g:EmacsCommandLineDeleteBackwardsToWhiteSpaceDisable|
-  |g:EmacsCommandLineBackwardKillWordDisable|
-  |g:EmacsCommandLineYankDisable|
-  |g:EmacsCommandLineUndoDisable|
-  |g:EmacsCommandLineToggleExternalCommandDisable|
+  *g:EmacsCommandLineForwardCharDisable*
+  *g:EmacsCommandLineBackwardCharDisable*
+  *g:EmacsCommandLineBeginningOfLineDisable*
+  *g:EmacsCommandLineEndOfLineDisable*
+  *g:EmacsCommandLineOlderMatchingCommandLineDisable*
+  *g:EmacsCommandLineNewerMatchingCommandLineDisable*
+  *g:EmacsCommandLineSearchCommandLineDisable*
+  *g:EmacsCommandLineAbortCommanDisable*
+  *g:EmacsCommandLineForwardWordDisable*
+  *g:EmacsCommandLineBackwardWordDisable*
+  *g:EmacsCommandLineDeleteCharDisable*
+  *g:EmacsCommandLineBackwardDeleteCharDisable*
+  *g:EmacsCommandLineKillLineDisable*
+  *g:EmacsCommandLineBackwardKillLineDisable*
+  *g:EmacsCommandLineKillWordDisable*
+  *g:EmacsCommandLineDeleteBackwardsToWhiteSpaceDisable*
+  *g:EmacsCommandLineBackwardKillWordDisable*
+  *g:EmacsCommandLineYankDisable*
+  *g:EmacsCommandLineUndoDisable*
+  *g:EmacsCommandLineToggleExternalCommandDisable*
 
       These options all have the format g:EmacsCommandLine[Command]Disable,
       where “[Command]” refers to a specific mapping.
@@ -161,26 +178,26 @@ All available options:
                              *g:EmacsCommandLine[Command]Map*
                               string or list of strings
                               (defaults to mappings as above)
-  |g:EmacsCommandLineForwardCharMap|
-  |g:EmacsCommandLineBackwardCharMap|
-  |g:EmacsCommandLineBeginningOfLineMap|
-  |g:EmacsCommandLineEndOfLineMap|
-  |g:EmacsCommandLineOlderMatchingCommandLineMap|
-  |g:EmacsCommandLineNewerMatchingCommandLineMap|
-  |g:EmacsCommandLineSearchCommandLineMap|
-  |g:EmacsCommandLineAbortCommanMap|
-  |g:EmacsCommandLineForwardWordMap|
-  |g:EmacsCommandLineBackwardWordMap|
-  |g:EmacsCommandLineDeleteCharMap|
-  |g:EmacsCommandLineBackwardDeleteCharMap|
-  |g:EmacsCommandLineKillLineMap|
-  |g:EmacsCommandLineBackwardKillLineMap|
-  |g:EmacsCommandLineKillWordMap|
-  |g:EmacsCommandLineDeleteBackwardsToWhiteSpaceMap|
-  |g:EmacsCommandLineBackwardKillWordMap|
-  |g:EmacsCommandLineYankMap|
-  |g:EmacsCommandLineUndoMap|
-  |g:EmacsCommandLineToggleExternalCommandMap|
+  *g:EmacsCommandLineForwardCharMap*
+  *g:EmacsCommandLineBackwardCharMap*
+  *g:EmacsCommandLineBeginningOfLineMap*
+  *g:EmacsCommandLineEndOfLineMap*
+  *g:EmacsCommandLineOlderMatchingCommandLineMap*
+  *g:EmacsCommandLineNewerMatchingCommandLineMap*
+  *g:EmacsCommandLineSearchCommandLineMap*
+  *g:EmacsCommandLineAbortCommanMap*
+  *g:EmacsCommandLineForwardWordMap*
+  *g:EmacsCommandLineBackwardWordMap*
+  *g:EmacsCommandLineDeleteCharMap*
+  *g:EmacsCommandLineBackwardDeleteCharMap*
+  *g:EmacsCommandLineKillLineMap*
+  *g:EmacsCommandLineBackwardKillLineMap*
+  *g:EmacsCommandLineKillWordMap*
+  *g:EmacsCommandLineDeleteBackwardsToWhiteSpaceMap*
+  *g:EmacsCommandLineBackwardKillWordMap*
+  *g:EmacsCommandLineYankMap*
+  *g:EmacsCommandLineUndoMap*
+  *g:EmacsCommandLineToggleExternalCommandMap*
 
       These options all have the format g:EmacsCommandLine[Command]Map,
       where “[Command]” refers to a specific mapping.
@@ -197,26 +214,26 @@ All available options:
 
                              *g:EmacsCommandLine[Command]MapOnlyWhenEmpty*
                               number (default varies)
-  |g:EmacsCommandLineForwardCharMapOnlyWhenEmpty|
-  |g:EmacsCommandLineBackwardCharMapOnlyWhenEmpty|
-  |g:EmacsCommandLineBeginningOfLineMapOnlyWhenEmpty|
-  |g:EmacsCommandLineEndOfLineMapOnlyWhenEmpty|
-  |g:EmacsCommandLineOlderMatchingCommandLineMapOnlyWhenEmpty|
-  |g:EmacsCommandLineNewerMatchingCommandLineMapOnlyWhenEmpty|
-  |g:EmacsCommandLineSearchCommandLineMapOnlyWhenEmpty|
-  |g:EmacsCommandLineAbortCommanMapOnlyWhenEmpty|
-  |g:EmacsCommandLineForwardWordMapOnlyWhenEmpty|
-  |g:EmacsCommandLineBackwardWordMapOnlyWhenEmpty|
-  |g:EmacsCommandLineDeleteCharMapOnlyWhenEmpty|
-  |g:EmacsCommandLineBackwardDeleteCharMapOnlyWhenEmpty|
-  |g:EmacsCommandLineKillLineMapOnlyWhenEmpty|
-  |g:EmacsCommandLineBackwardKillLineMapOnlyWhenEmpty|
-  |g:EmacsCommandLineKillWordMapOnlyWhenEmpty|
-  |g:EmacsCommandLineDeleteBackwardsToWhiteSpaceMapOnlyWhenEmpty|
-  |g:EmacsCommandLineBackwardKillWordMapOnlyWhenEmpty|
-  |g:EmacsCommandLineYankMapOnlyWhenEmpty|
-  |g:EmacsCommandLineUndoMapOnlyWhenEmpty|
-  |g:EmacsCommandLineToggleExternalCommandMapOnlyWhenEmpty|
+  *g:EmacsCommandLineForwardCharMapOnlyWhenEmpty*
+  *g:EmacsCommandLineBackwardCharMapOnlyWhenEmpty*
+  *g:EmacsCommandLineBeginningOfLineMapOnlyWhenEmpty*
+  *g:EmacsCommandLineEndOfLineMapOnlyWhenEmpty*
+  *g:EmacsCommandLineOlderMatchingCommandLineMapOnlyWhenEmpty*
+  *g:EmacsCommandLineNewerMatchingCommandLineMapOnlyWhenEmpty*
+  *g:EmacsCommandLineSearchCommandLineMapOnlyWhenEmpty*
+  *g:EmacsCommandLineAbortCommanMapOnlyWhenEmpty*
+  *g:EmacsCommandLineForwardWordMapOnlyWhenEmpty*
+  *g:EmacsCommandLineBackwardWordMapOnlyWhenEmpty*
+  *g:EmacsCommandLineDeleteCharMapOnlyWhenEmpty*
+  *g:EmacsCommandLineBackwardDeleteCharMapOnlyWhenEmpty*
+  *g:EmacsCommandLineKillLineMapOnlyWhenEmpty*
+  *g:EmacsCommandLineBackwardKillLineMapOnlyWhenEmpty*
+  *g:EmacsCommandLineKillWordMapOnlyWhenEmpty*
+  *g:EmacsCommandLineDeleteBackwardsToWhiteSpaceMapOnlyWhenEmpty*
+  *g:EmacsCommandLineBackwardKillWordMapOnlyWhenEmpty*
+  *g:EmacsCommandLineYankMapOnlyWhenEmpty*
+  *g:EmacsCommandLineUndoMapOnlyWhenEmpty*
+  *g:EmacsCommandLineToggleExternalCommandMapOnlyWhenEmpty*
 
       These options all have the format
       g:EmacsCommandLine[Command]MapOnlyWhenEmpty, where “[Command]” refers to
@@ -228,32 +245,32 @@ All available options:
 
       By default, the following mappings are set to 1:
 
-        g:EmacsCommandLineSearchCommandLineMapOnlyWhenEmpty
+        |g:EmacsCommandLineSearchCommandLineMapOnlyWhenEmpty|
 
       All others default to 0.
 
                              *g:EmacsCommandLine[Command]NoMapAtEnd*
                               number (default varies)
-  |g:EmacsCommandLineForwardCharNoMapAtEnd|
-  |g:EmacsCommandLineBackwardCharNoMapAtEnd|
-  |g:EmacsCommandLineBeginningOfLineNoMapAtEnd|
-  |g:EmacsCommandLineEndOfLineNoMapAtEnd|
-  |g:EmacsCommandLineOlderMatchingCommandLineNoMapAtEnd|
-  |g:EmacsCommandLineNewerMatchingCommandLineNoMapAtEnd|
-  |g:EmacsCommandLineSearchCommandLineNoMapAtEnd|
-  |g:EmacsCommandLineAbortCommanNoMapAtEnd|
-  |g:EmacsCommandLineForwardWordNoMapAtEnd|
-  |g:EmacsCommandLineBackwardWordNoMapAtEnd|
-  |g:EmacsCommandLineDeleteCharNoMapAtEnd|
-  |g:EmacsCommandLineBackwardDeleteCharNoMapAtEnd|
-  |g:EmacsCommandLineKillLineNoMapAtEnd|
-  |g:EmacsCommandLineBackwardKillLineNoMapAtEnd|
-  |g:EmacsCommandLineKillWordNoMapAtEnd|
-  |g:EmacsCommandLineDeleteBackwardsToWhiteSpaceNoMapAtEnd|
-  |g:EmacsCommandLineBackwardKillWordNoMapAtEnd|
-  |g:EmacsCommandLineYankNoMapAtEnd|
-  |g:EmacsCommandLineUndoNoMapAtEnd|
-  |g:EmacsCommandLineToggleExternalCommandNoMapAtEnd|
+  *g:EmacsCommandLineForwardCharNoMapAtEnd*
+  *g:EmacsCommandLineBackwardCharNoMapAtEnd*
+  *g:EmacsCommandLineBeginningOfLineNoMapAtEnd*
+  *g:EmacsCommandLineEndOfLineNoMapAtEnd*
+  *g:EmacsCommandLineOlderMatchingCommandLineNoMapAtEnd*
+  *g:EmacsCommandLineNewerMatchingCommandLineNoMapAtEnd*
+  *g:EmacsCommandLineSearchCommandLineNoMapAtEnd*
+  *g:EmacsCommandLineAbortCommanNoMapAtEnd*
+  *g:EmacsCommandLineForwardWordNoMapAtEnd*
+  *g:EmacsCommandLineBackwardWordNoMapAtEnd*
+  *g:EmacsCommandLineDeleteCharNoMapAtEnd*
+  *g:EmacsCommandLineBackwardDeleteCharNoMapAtEnd*
+  *g:EmacsCommandLineKillLineNoMapAtEnd*
+  *g:EmacsCommandLineBackwardKillLineNoMapAtEnd*
+  *g:EmacsCommandLineKillWordNoMapAtEnd*
+  *g:EmacsCommandLineDeleteBackwardsToWhiteSpaceNoMapAtEnd*
+  *g:EmacsCommandLineBackwardKillWordNoMapAtEnd*
+  *g:EmacsCommandLineYankNoMapAtEnd*
+  *g:EmacsCommandLineUndoNoMapAtEnd*
+  *g:EmacsCommandLineToggleExternalCommandNoMapAtEnd*
 
       These options all have the format g:EmacsCommandLine[Command]NoMapAtEnd,
       where “[Command]” refers to a specific mapping.
@@ -264,10 +281,10 @@ All available options:
 
       By default, the following mappings are set to 1:
 
-        g:EmacsCommandLineForwardCharNoMapAtEnd
-        g:EmacsCommandLineEndOfLineNoMapAtEnd
-        g:EmacsCommandLineDeleteCharNoMapAtEnd
-        g:EmacsCommandLineKillLineNoMapAtEnd
+        |g:EmacsCommandLineForwardCharNoMapAtEnd|
+        |g:EmacsCommandLineEndOfLineNoMapAtEnd|
+        |g:EmacsCommandLineDeleteCharNoMapAtEnd|
+        |g:EmacsCommandLineKillLineNoMapAtEnd|
 
       All others default to 0.
 
@@ -276,6 +293,9 @@ OLD KEYS                                        *emacscommandline-old-keys*
 The old functions are all mapped to the same combination prefixed by CTRL-O.
 So for example, to open the command-line window (see |c_CTRL-F|), press
 instead CTRL-O_CTRL-F.
+
+This can be customized using the option|g:EmacsCommandLineOldMapPrefix| (which
+defaults to '<C-O>').
 
 LIMITATIONS                                     *emacscommandline-limit*
 
