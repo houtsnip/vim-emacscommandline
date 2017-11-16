@@ -226,7 +226,7 @@ function! <SID>TransposeChar()
     call <SID>SaveUndoHistory(getcmdline(), getcmdpos())
     let l:pos = getcmdpos() + strlen(substitute(strpart(getcmdline(), getcmdpos() - 1), '\(.' . (getcmdpos() < 2 ? '.' : '') . '\).*', '\1', ''))
     let l:ret = substitute(strpart(getcmdline(), 0, l:pos - 1), '\(.*\)\(.\)\(.\)$', '\1\3\2', '') . strpart(getcmdline(), l:pos - 1)
-    call <SID>SaveUndoHistory(l:ret, getcmdpos())
+    call <SID>SaveUndoHistory(l:ret, l:pos)
     call setcmdpos(l:pos)
     return l:ret
 endfunction
