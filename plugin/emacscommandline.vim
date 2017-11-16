@@ -27,9 +27,15 @@ let s:mappings = {
     \'EndOfLine':                ['<C-E>', '<End>'],
     \'OlderMatchingCommandLine': ['<C-P>', '<Up>'],
     \'NewerMatchingCommandLine': ['<C-N>', '<Down>'],
+    \'FirstLineInHistory':       ['<M-<>', '<C-F>gg<C-C>'],
+    \'LastLineInHistory':        ['<M->>', '<C-F>Gk<C-C>'],
     \'SearchCommandLine':        ['<C-R>', '<C-F>?'],
     \'AbortCommand':             ['<C-G>', '<C-C>']
     \}
+if !has('gui_running') && !has('nvim')
+    let s:mappings['FirstLineInHistory'][0] = '<Esc><'
+    let s:mappings['LastLineInHistory'][0]  = '<Esc>>'
+endif
 for s:key in keys(s:mappings)
     if !exists('g:EmacsCommandLine' . s:key . 'Disable') || g:EmacsCommandLine{s:key}Disable != 1
         let s:{s:key}MapDefined = exists('g:EmacsCommandLine' . s:key . 'Map')
@@ -216,6 +222,15 @@ function! <SID>BackwardKillWord()
     return l:ret
 endfunction
 
+function! <SID>TransposeChar()
+    call <SID>SaveUndoHistory(getcmdline(), getcmdpos())
+    let l:pos = getcmdpos() + strlen(substitute(strpart(getcmdline(), getcmdpos() - 1), '\(.' . (getcmdpos() < 2 ? '.' : '') . '\).*', '\1', ''))
+    let l:ret = substitute(strpart(getcmdline(), 0, l:pos - 1), '\(.*\)\(.\)\(.\)$', '\1\3\2', '') . strpart(getcmdline(), l:pos - 1)
+    call <SID>SaveUndoHistory(l:ret, getcmdpos())
+    call setcmdpos(l:pos)
+    return l:ret
+endfunction
+
 function! <SID>Yank()
     let l:cmd = getcmdline()
     call setcmdpos(getcmdpos() + strlen(@c))
@@ -276,6 +291,7 @@ let s:functions = {
     \'KillWord':                    '<M-d>',
     \'DeleteBackwardsToWhiteSpace': '<C-W>',
     \'BackwardKillWord':            '<M-BS>',
+    \'TransposeChar':               '<C-T>',
     \'Yank':                        '<C-Y>',
     \'Undo':                        ['<C-_>', '<C-X><C-U>'],
     \'ToggleExternalCommand':       '<C-Z>'

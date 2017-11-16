@@ -95,6 +95,10 @@ HISTORY                                         *emacscommandline-history*
 
 *CTRL-N*         Next line in history (same as |c_<Down>|)
 
+*META-<*         First line in history
+
+*META->*         Last line in history
+
 *CTRL-R*         Search history backwards
 
                  (This mapping is only used when the command line is empty —
@@ -103,6 +107,8 @@ HISTORY                                         *emacscommandline-history*
                   |g:EmacsCommandLineSearchCommandLineMapOnlyWhenEmpty|.)
 
 OTHER                                           *emacscommandline-other*
+
+*CTRL-T*         Transpose character under cursor with previous character
 
 *CTRL-Y*         Paste (yank) last deleted text (over-rides |c_CTRL-Y|).
 
@@ -145,25 +151,28 @@ All available options:
 
                              *g:EmacsCommandLine[Command]Disable*
                               number (default 0)
-  *g:EmacsCommandLineForwardCharDisable*
-  *g:EmacsCommandLineBackwardCharDisable*
   *g:EmacsCommandLineBeginningOfLineDisable*
   *g:EmacsCommandLineEndOfLineDisable*
-  *g:EmacsCommandLineOlderMatchingCommandLineDisable*
-  *g:EmacsCommandLineNewerMatchingCommandLineDisable*
-  *g:EmacsCommandLineSearchCommandLineDisable*
-  *g:EmacsCommandLineAbortCommanDisable*
-  *g:EmacsCommandLineForwardWordDisable*
+  *g:EmacsCommandLineBackwardCharDisable*
+  *g:EmacsCommandLineForwardCharDisable*
   *g:EmacsCommandLineBackwardWordDisable*
+  *g:EmacsCommandLineForwardWordDisable*
   *g:EmacsCommandLineDeleteCharDisable*
   *g:EmacsCommandLineBackwardDeleteCharDisable*
   *g:EmacsCommandLineKillLineDisable*
   *g:EmacsCommandLineBackwardKillLineDisable*
   *g:EmacsCommandLineKillWordDisable*
-  *g:EmacsCommandLineDeleteBackwardsToWhiteSpaceDisable*
   *g:EmacsCommandLineBackwardKillWordDisable*
+  *g:EmacsCommandLineDeleteBackwardsToWhiteSpaceDisable*
+  *g:EmacsCommandLineOlderMatchingCommandLineDisable*
+  *g:EmacsCommandLineNewerMatchingCommandLineDisable*
+  *g:EmacsCommandLineFirstLineInHistoryDisable*
+  *g:EmacsCommandLineLastLineInHistoryDisable*
+  *g:EmacsCommandLineSearchCommandLineDisable*
+  *g:EmacsCommandLineTransposeCharDisable*
   *g:EmacsCommandLineYankDisable*
   *g:EmacsCommandLineUndoDisable*
+  *g:EmacsCommandLineAbortCommandDisable*
   *g:EmacsCommandLineToggleExternalCommandDisable*
 
       These options all have the format g:EmacsCommandLine[Command]Disable,
@@ -178,25 +187,28 @@ All available options:
                              *g:EmacsCommandLine[Command]Map*
                               string or list of strings
                               (defaults to mappings as above)
-  *g:EmacsCommandLineForwardCharMap*
-  *g:EmacsCommandLineBackwardCharMap*
   *g:EmacsCommandLineBeginningOfLineMap*
   *g:EmacsCommandLineEndOfLineMap*
-  *g:EmacsCommandLineOlderMatchingCommandLineMap*
-  *g:EmacsCommandLineNewerMatchingCommandLineMap*
-  *g:EmacsCommandLineSearchCommandLineMap*
-  *g:EmacsCommandLineAbortCommanMap*
-  *g:EmacsCommandLineForwardWordMap*
+  *g:EmacsCommandLineBackwardCharMap*
+  *g:EmacsCommandLineForwardCharMap*
   *g:EmacsCommandLineBackwardWordMap*
+  *g:EmacsCommandLineForwardWordMap*
   *g:EmacsCommandLineDeleteCharMap*
   *g:EmacsCommandLineBackwardDeleteCharMap*
   *g:EmacsCommandLineKillLineMap*
   *g:EmacsCommandLineBackwardKillLineMap*
   *g:EmacsCommandLineKillWordMap*
-  *g:EmacsCommandLineDeleteBackwardsToWhiteSpaceMap*
   *g:EmacsCommandLineBackwardKillWordMap*
+  *g:EmacsCommandLineDeleteBackwardsToWhiteSpaceMap*
+  *g:EmacsCommandLineOlderMatchingCommandLineMap*
+  *g:EmacsCommandLineNewerMatchingCommandLineMap*
+  *g:EmacsCommandLineFirstLineInHistoryMap*
+  *g:EmacsCommandLineLastLineInHistoryMap*
+  *g:EmacsCommandLineSearchCommandLineMap*
+  *g:EmacsCommandLineTransposeCharMap*
   *g:EmacsCommandLineYankMap*
   *g:EmacsCommandLineUndoMap*
+  *g:EmacsCommandLineAbortCommandMap*
   *g:EmacsCommandLineToggleExternalCommandMap*
 
       These options all have the format g:EmacsCommandLine[Command]Map,
@@ -214,25 +226,28 @@ All available options:
 
                              *g:EmacsCommandLine[Command]MapOnlyWhenEmpty*
                               number (default varies)
-  *g:EmacsCommandLineForwardCharMapOnlyWhenEmpty*
-  *g:EmacsCommandLineBackwardCharMapOnlyWhenEmpty*
   *g:EmacsCommandLineBeginningOfLineMapOnlyWhenEmpty*
   *g:EmacsCommandLineEndOfLineMapOnlyWhenEmpty*
-  *g:EmacsCommandLineOlderMatchingCommandLineMapOnlyWhenEmpty*
-  *g:EmacsCommandLineNewerMatchingCommandLineMapOnlyWhenEmpty*
-  *g:EmacsCommandLineSearchCommandLineMapOnlyWhenEmpty*
-  *g:EmacsCommandLineAbortCommanMapOnlyWhenEmpty*
-  *g:EmacsCommandLineForwardWordMapOnlyWhenEmpty*
+  *g:EmacsCommandLineBackwardCharMapOnlyWhenEmpty*
+  *g:EmacsCommandLineForwardCharMapOnlyWhenEmpty*
   *g:EmacsCommandLineBackwardWordMapOnlyWhenEmpty*
+  *g:EmacsCommandLineForwardWordMapOnlyWhenEmpty*
   *g:EmacsCommandLineDeleteCharMapOnlyWhenEmpty*
   *g:EmacsCommandLineBackwardDeleteCharMapOnlyWhenEmpty*
   *g:EmacsCommandLineKillLineMapOnlyWhenEmpty*
   *g:EmacsCommandLineBackwardKillLineMapOnlyWhenEmpty*
   *g:EmacsCommandLineKillWordMapOnlyWhenEmpty*
-  *g:EmacsCommandLineDeleteBackwardsToWhiteSpaceMapOnlyWhenEmpty*
   *g:EmacsCommandLineBackwardKillWordMapOnlyWhenEmpty*
+  *g:EmacsCommandLineDeleteBackwardsToWhiteSpaceMapOnlyWhenEmpty*
+  *g:EmacsCommandLineOlderMatchingCommandLineMapOnlyWhenEmpty*
+  *g:EmacsCommandLineNewerMatchingCommandLineMapOnlyWhenEmpty*
+  *g:EmacsCommandLineFirstLineInHistoryMapOnlyWhenEmpty*
+  *g:EmacsCommandLineLastLineInHistoryMapOnlyWhenEmpty*
+  *g:EmacsCommandLineSearchCommandLineMapOnlyWhenEmpty*
+  *g:EmacsCommandLineTransposeCharMapOnlyWhenEmpty*
   *g:EmacsCommandLineYankMapOnlyWhenEmpty*
   *g:EmacsCommandLineUndoMapOnlyWhenEmpty*
+  *g:EmacsCommandLineAbortCommandMapOnlyWhenEmpty*
   *g:EmacsCommandLineToggleExternalCommandMapOnlyWhenEmpty*
 
       These options all have the format
@@ -251,25 +266,28 @@ All available options:
 
                              *g:EmacsCommandLine[Command]NoMapAtEnd*
                               number (default varies)
-  *g:EmacsCommandLineForwardCharNoMapAtEnd*
-  *g:EmacsCommandLineBackwardCharNoMapAtEnd*
   *g:EmacsCommandLineBeginningOfLineNoMapAtEnd*
   *g:EmacsCommandLineEndOfLineNoMapAtEnd*
-  *g:EmacsCommandLineOlderMatchingCommandLineNoMapAtEnd*
-  *g:EmacsCommandLineNewerMatchingCommandLineNoMapAtEnd*
-  *g:EmacsCommandLineSearchCommandLineNoMapAtEnd*
-  *g:EmacsCommandLineAbortCommanNoMapAtEnd*
-  *g:EmacsCommandLineForwardWordNoMapAtEnd*
+  *g:EmacsCommandLineBackwardCharNoMapAtEnd*
+  *g:EmacsCommandLineForwardCharNoMapAtEnd*
   *g:EmacsCommandLineBackwardWordNoMapAtEnd*
+  *g:EmacsCommandLineForwardWordNoMapAtEnd*
   *g:EmacsCommandLineDeleteCharNoMapAtEnd*
   *g:EmacsCommandLineBackwardDeleteCharNoMapAtEnd*
   *g:EmacsCommandLineKillLineNoMapAtEnd*
   *g:EmacsCommandLineBackwardKillLineNoMapAtEnd*
   *g:EmacsCommandLineKillWordNoMapAtEnd*
-  *g:EmacsCommandLineDeleteBackwardsToWhiteSpaceNoMapAtEnd*
   *g:EmacsCommandLineBackwardKillWordNoMapAtEnd*
+  *g:EmacsCommandLineDeleteBackwardsToWhiteSpaceNoMapAtEnd*
+  *g:EmacsCommandLineOlderMatchingCommandLineNoMapAtEnd*
+  *g:EmacsCommandLineNewerMatchingCommandLineNoMapAtEnd*
+  *g:EmacsCommandLineFirstLineInHistoryNoMapAtEnd*
+  *g:EmacsCommandLineLastLineInHistoryNoMapAtEnd*
+  *g:EmacsCommandLineSearchCommandLineNoMapAtEnd*
+  *g:EmacsCommandLineTransposeCharNoMapAtEnd*
   *g:EmacsCommandLineYankNoMapAtEnd*
   *g:EmacsCommandLineUndoNoMapAtEnd*
+  *g:EmacsCommandLineAbortCommandNoMapAtEnd*
   *g:EmacsCommandLineToggleExternalCommandNoMapAtEnd*
 
       These options all have the format g:EmacsCommandLine[Command]NoMapAtEnd,
