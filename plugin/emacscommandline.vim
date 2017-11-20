@@ -4,6 +4,9 @@ endif
 if !exists('g:EmacsCommandLineOldMapPrefix')
     let g:EmacsCommandLineOldMapPrefix = '<C-O>'
 endif
+if !exists('g:EmacsCommandLineWordCharCharacterClass')
+    let g:EmacsCommandLineWordCharCharacterClass = 'a-zA-Z0-9_À-ÖØ-öø-ÿĀ-ǿȀ-ɏͰ-ͳͶͷΆΈΉΊΌΎ-ΡΣ-ώϚ-ϯϷϸϺϻЀ-ҁ'
+endif
 if !exists('g:EmacsCommandLineSearchCommandLineMapOnlyWhenEmpty')
     let g:EmacsCommandLineSearchCommandLineMapOnlyWhenEmpty = 1
 endif
@@ -73,8 +76,8 @@ endfor
 function! <SID>ForwardWord()
     let l:loc = strpart(getcmdline(), 0, getcmdpos() - 1)
     let l:roc = strpart(getcmdline(), getcmdpos() - 1)
-    if l:roc =~ '\v^\s*\w'
-        let l:rem = matchstr(l:roc, '\v^\s*\w+')
+    if l:roc =~ '\v^\s*[' . g:EmacsCommandLineWordCharCharacterClass . ']'
+        let l:rem = matchstr(l:roc, '\v^\s*[' . g:EmacsCommandLineWordCharCharacterClass . ']+')
     elseif l:roc =~ '\v^\s*[^[:alnum:]_[:blank:]]'
         let l:rem = matchstr(l:roc, '\v^\s*[^[:alnum:]_[:blank:]]+')
     else
@@ -88,8 +91,8 @@ endfunction
 function! <SID>BackwardWord()
     let l:loc = strpart(getcmdline(), 0, getcmdpos() - 1)
     let l:roc = strpart(getcmdline(), getcmdpos() - 1)
-    if l:loc =~ '\v\w\s*$'
-        let l:rem = matchstr(l:loc, '\v\w+\s*$')
+    if l:loc =~ '\v[' . g:EmacsCommandLineWordCharCharacterClass . ']\s*$'
+        let l:rem = matchstr(l:loc, '\v[' . g:EmacsCommandLineWordCharCharacterClass . ']+\s*$')
     elseif l:loc =~ '\v[^[:alnum:]_[:blank:]]\s*$'
         let l:rem = matchstr(l:loc, '\v[^[:alnum:]_[:blank:]]+\s*$')
     else
@@ -105,7 +108,7 @@ function! <SID>DeleteChar()
     call <SID>SaveUndoHistory(getcmdline(), getcmdpos())
     let l:cmd     = getcmdline()
     " Get length of character to be deleted (in bytes)
-    let l:charlen = strlen(substitute(strpart(l:cmd, getcmdpos() - 1), '^\(.\).*', '\1', ''))
+    let l:charlen = strlen(substitute(strpart(l:cmd, getcmdpos() - 1), '\v^(.).*', '\1', ''))
     let l:rem     = strpart(l:cmd, getcmdpos() - 1, l:charlen)
     if '' != l:rem
         let @c = l:rem
@@ -122,7 +125,7 @@ function! <SID>BackwardDeleteChar()
     endif
     let l:cmd     = getcmdline()
     " Get length of character to be deleted (in bytes)
-    let l:charlen = strlen(substitute(strpart(l:cmd, 0, getcmdpos() - 1), '.*\(.\)$', '\1', ''))
+    let l:charlen = strlen(substitute(strpart(l:cmd, 0, getcmdpos() - 1), '\v.*(.)$', '\1', ''))
     let l:pos     = getcmdpos() - l:charlen
     let l:rem     = strpart(l:cmd, getcmdpos() - l:charlen - 1, l:charlen)
     let @c        = l:rem
@@ -161,8 +164,8 @@ function! <SID>KillWord()
     call <SID>SaveUndoHistory(getcmdline(), getcmdpos())
     let l:loc = strpart(getcmdline(), 0, getcmdpos() - 1)
     let l:roc = strpart(getcmdline(), getcmdpos() - 1)
-    if l:roc =~ '\v^\s*\w'
-        let l:rem = matchstr(l:roc, '\v^\s*\w+')
+    if l:roc =~ '\v^\s*[' . g:EmacsCommandLineWordCharCharacterClass . ']'
+        let l:rem = matchstr(l:roc, '\v^\s*[' . g:EmacsCommandLineWordCharCharacterClass . ']+')
     elseif l:roc =~ '\v^\s*[^[:alnum:]_[:blank:]]'
         let l:rem = matchstr(l:roc, '\v^\s*[^[:alnum:]_[:blank:]]+')
     elseif l:roc =~ '\v^\s+$'
@@ -203,8 +206,8 @@ function! <SID>BackwardKillWord()
     call <SID>SaveUndoHistory(getcmdline(), getcmdpos())
     let l:loc = strpart(getcmdline(), 0, getcmdpos() - 1)
     let l:roc = strpart(getcmdline(), getcmdpos() - 1)
-    if l:loc =~ '\v\w\s*$'
-        let l:rem = matchstr(l:loc, '\v\w+\s*$')
+    if l:loc =~ '\v[' . g:EmacsCommandLineWordCharCharacterClass . ']\s*$'
+        let l:rem = matchstr(l:loc, '\v[' . g:EmacsCommandLineWordCharCharacterClass . ']+\s*$')
     elseif l:loc =~ '\v[^[:alnum:]_[:blank:]]\s*$'
         let l:rem = matchstr(l:loc, '\v[^[:alnum:]_[:blank:]]+\s*$')
     elseif l:loc =~ '\v^\s+$'
