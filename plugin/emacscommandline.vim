@@ -227,8 +227,33 @@ endfunction
 
 function! <SID>TransposeChar()
     call <SID>SaveUndoHistory(getcmdline(), getcmdpos())
-    let l:pos = getcmdpos() + strlen(substitute(strpart(getcmdline(), getcmdpos() - 1), '\(.' . (getcmdpos() < 2 ? '.' : '') . '\).*', '\1', ''))
-    let l:ret = substitute(strpart(getcmdline(), 0, l:pos - 1), '\(.*\)\(.\)\(.\)$', '\1\3\2', '') . strpart(getcmdline(), l:pos - 1)
+    let l:pos = getcmdpos() + strlen(substitute(strpart(getcmdline(), getcmdpos() - 1), '\v(.' . (getcmdpos() < 2 ? '.' : '') . ').*', '\1', ''))
+    let l:ret = substitute(strpart(getcmdline(), 0, l:pos - 1), '\v(.*)(.)(.)$', '\1\3\2', '') . strpart(getcmdline(), l:pos - 1)
+    call <SID>SaveUndoHistory(l:ret, l:pos)
+    call setcmdpos(l:pos)
+    return l:ret
+endfunction
+
+function! <SID>TransposeWord()
+    let l:loc = strpart(getcmdline(), 0, getcmdpos() - 1) . substitute(strpart(getcmdline(), getcmdpos() - 1), '\v(.).*', '\1', '')
+    let l:roc = strpart(getcmdline(), strlen(l:loc))
+    if !(l:loc =~ '\v^\s*\S+\s')
+        return getcmdline()
+    endi
+    if l:loc =~ '\s$'
+        if l:roc =~ '^\s*\S'
+            let l:loc = l:loc . substitute(l:roc, '\v(\s*\S+).*', '\1', '')
+            let l:roc = strpart(getcmdline(), strlen(l:loc))
+        elseif l:roc =~ '^\s*$'
+            let l:roc = substitute(l:loc, '\v.{-}(\s+)$', '\1', '') . l:roc
+            let l:loc = strpart(getcmdline(), 0, strlen(getcmdline()) - strlen(l:roc))
+        endif
+    elseif l:loc =~ '\S$' && l:roc =~ '^\S'
+        let l:loc = l:loc . substitute(l:roc, '\v(\S+).*', '\1', '')
+        let l:roc = strpart(getcmdline(), strlen(l:loc))
+    endif
+    let l:pos = strlen(l:loc) + 1
+    let l:ret = substitute(l:loc, '\v^(.{-})(\S+)(\s+)(\S+)(\s*)$', '\1\4\3\2\5', '') . l:roc
     call <SID>SaveUndoHistory(l:ret, l:pos)
     call setcmdpos(l:pos)
     return l:ret
@@ -295,6 +320,7 @@ let s:functions = {
     \'DeleteBackwardsToWhiteSpace': '<C-W>',
     \'BackwardKillWord':            '<M-BS>',
     \'TransposeChar':               '<C-T>',
+    \'TransposeWord':               '<M-t>',
     \'Yank':                        '<C-Y>',
     \'Undo':                        ['<C-_>', '<C-X><C-U>'],
     \'ToggleExternalCommand':       '<C-Z>'
@@ -304,6 +330,7 @@ if !has('gui_running') && !has('nvim')
     let s:functions['BackwardWord']     = '<Esc>b'
     let s:functions['KillWord']         = '<Esc>d'
     let s:functions['BackwardKillWord'] = '<Esc><BS>'
+    let s:functions['TransposeWord']    = '<Esc>t'
 endif
 for s:key in keys(s:functions)
     if !exists('g:EmacsCommandLine' . s:key . 'Disable') || g:EmacsCommandLine{s:key}Disable != 1
