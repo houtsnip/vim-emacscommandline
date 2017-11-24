@@ -5,7 +5,12 @@ if !exists('g:EmacsCommandLineOldMapPrefix')
     let g:EmacsCommandLineOldMapPrefix = '<C-O>'
 endif
 if !exists('g:EmacsCommandLineWordCharCharacterClass')
-    let g:EmacsCommandLineWordCharCharacterClass = 'a-zA-Z0-9_À-ÖØ-öø-ÿĀ-ǿȀ-ɏͰ-ͳͶͷΆΈΉΊΌΎ-ΡΣ-ώϚ-ϯϷϸϺϻЀ-ҁ'
+    " Latin-1, Latin Extended-A, Extended-B, Greek and Coptic, and Cyrillic scripts:
+    "let g:EmacsCommandLineWordCharCharacterClass = 'a-zA-Z0-9_À-ÖØ-öø-ÿĀ-ǿȀ-ɏͰ-ͳͶͷΆΈΉΊΌΎ-ΡΣ-ώϚ-ϯϷϸϺϻЀ-ҁ'
+    " Latin-1 (the most common European letters):
+    let g:EmacsCommandLineWordCharCharacterClass = 'a-zA-Z0-9_À-ÖØ-öø-ÿ'
+    " Basic Latin (unaccented) word characters:
+    "let g:EmacsCommandLineWordCharCharacterClass = '\w'
 endif
 if !exists('g:EmacsCommandLineSearchCommandLineMapOnlyWhenEmpty')
     let g:EmacsCommandLineSearchCommandLineMapOnlyWhenEmpty = 1
@@ -112,7 +117,7 @@ function! <SID>DeleteChar()
     call <SID>SaveUndoHistory(getcmdline(), getcmdpos())
     let l:cmd     = getcmdline()
     " Get length of character to be deleted (in bytes)
-    let l:charlen = strlen(substitute(strpart(l:cmd, getcmdpos() - 1), '\v^(.).*', '\1', ''))
+    let l:charlen = strlen(matchstr(strpart(l:cmd, getcmdpos() - 1), '^.'))
     let l:rem     = strpart(l:cmd, getcmdpos() - 1, l:charlen)
     if '' != l:rem
         let @c = l:rem
@@ -129,7 +134,7 @@ function! <SID>BackwardDeleteChar()
     endif
     let l:cmd     = getcmdline()
     " Get length of character to be deleted (in bytes)
-    let l:charlen = strlen(substitute(strpart(l:cmd, 0, getcmdpos() - 1), '\v.*(.)$', '\1', ''))
+    let l:charlen = strlen(matchstr(strpart(l:cmd, 0, getcmdpos() - 1), '.$'))
     let l:pos     = getcmdpos() - l:charlen
     let l:rem     = strpart(l:cmd, getcmdpos() - l:charlen - 1, l:charlen)
     let @c        = l:rem
@@ -231,7 +236,7 @@ endfunction
 
 function! <SID>TransposeChar()
     call <SID>SaveUndoHistory(getcmdline(), getcmdpos())
-    let l:pos = getcmdpos() + strlen(substitute(strpart(getcmdline(), getcmdpos() - 1), '\v(.' . (getcmdpos() < 2 ? '.' : '') . ').*', '\1', ''))
+    let l:pos = getcmdpos() + strlen(matchstr(strpart(getcmdline(), getcmdpos() - 1), '^.' . (getcmdpos() < 2 ? '.' : '')))
     let l:ret = substitute(strpart(getcmdline(), 0, l:pos - 1), '\v(.*)(.)(.)$', '\1\3\2', '') . strpart(getcmdline(), l:pos - 1)
     call <SID>SaveUndoHistory(l:ret, l:pos)
     call setcmdpos(l:pos)
@@ -239,21 +244,21 @@ function! <SID>TransposeChar()
 endfunction
 
 function! <SID>TransposeWord()
-    let l:loc = strpart(getcmdline(), 0, getcmdpos() - 1) . substitute(strpart(getcmdline(), getcmdpos() - 1), '\v(.).*', '\1', '')
+    let l:loc = strpart(getcmdline(), 0, getcmdpos() - 1) . matchstr(strpart(getcmdline(), getcmdpos() - 1), '^.')
     let l:roc = strpart(getcmdline(), strlen(l:loc))
     if l:loc !~ '\v^\s*\S+\s')
         return getcmdline()
     endi
     if l:loc =~ '\s$'
         if l:roc =~ '^\s*\S'
-            let l:loc = l:loc . substitute(l:roc, '\v(\s*\S+).*', '\1', '')
+            let l:loc = l:loc . matchstr(l:roc, '\v^\s*\S+')
             let l:roc = strpart(getcmdline(), strlen(l:loc))
         elseif l:roc =~ '^\s*$'
-            let l:roc = substitute(l:loc, '\v.{-}(\s+)$', '\1', '') . l:roc
+            let l:roc = matchstr(l:loc, '\v\s+$') . l:roc
             let l:loc = strpart(getcmdline(), 0, strlen(getcmdline()) - strlen(l:roc))
         endif
     elseif l:loc =~ '\S$' && l:roc =~ '^\S'
-        let l:loc = l:loc . substitute(l:roc, '\v(\S+).*', '\1', '')
+        let l:loc = l:loc . matchstr(l:roc, '\v^\S+')
         let l:roc = strpart(getcmdline(), strlen(l:loc))
     endif
     let l:pos = strlen(l:loc) + 1
