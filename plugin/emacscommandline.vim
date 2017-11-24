@@ -24,17 +24,17 @@ if !exists('g:EmacsCommandLineKillLineNoMapAtEnd')
 endif
 
 let s:mappings = {
-    \'ForwardChar':              ['<C-F>', '<Right>'],
-    \'BackwardChar':             ['<C-B>', '<Left>'],
-    \'BeginningOfLine':          ['<C-A>', '<Home>'],
-    \'EndOfLine':                ['<C-E>', '<End>'],
-    \'OlderMatchingCommandLine': ['<C-P>', '<Up>'],
-    \'NewerMatchingCommandLine': ['<C-N>', '<Down>'],
-    \'FirstLineInHistory':       ['<M-<>', '<C-F>gg<C-C>'],
-    \'LastLineInHistory':        ['<M->>', '<C-F>Gk<C-C>'],
-    \'SearchCommandLine':        ['<C-R>', '<C-F>?'],
-    \'AbortCommand':             ['<C-G>', '<C-C>']
-    \}
+   \ 'ForwardChar':              ['<C-F>', '<Right>'],
+   \ 'BackwardChar':             ['<C-B>', '<Left>'],
+   \ 'BeginningOfLine':          ['<C-A>', '<Home>'],
+   \ 'EndOfLine':                ['<C-E>', '<End>'],
+   \ 'OlderMatchingCommandLine': ['<C-P>', '<Up>'],
+   \ 'NewerMatchingCommandLine': ['<C-N>', '<Down>'],
+   \ 'FirstLineInHistory':       ['<M-<>', '<C-F>gg<C-C>'],
+   \ 'LastLineInHistory':        ['<M->>', '<C-F>Gk<C-C>'],
+   \ 'SearchCommandLine':        ['<C-R>', '<C-F>?'],
+   \ 'AbortCommand':             ['<C-G>', '<C-C>']
+   \ }
 if !has('gui_running') && !has('nvim')
     let s:mappings['FirstLineInHistory'][0] = '<Esc><'
     let s:mappings['LastLineInHistory'][0]  = '<Esc>>'
@@ -48,9 +48,11 @@ for s:key in keys(s:mappings)
         if type(g:EmacsCommandLine{s:key}Map) == 3
             for s:mapping in g:EmacsCommandLine{s:key}Map
                 if exists('g:EmacsCommandLine' . s:key . 'MapOnlyWhenEmpty') && g:EmacsCommandLine{s:key}MapOnlyWhenEmpty == 1
-                    exe 'cnoremap <expr> ' . s:mapping . ' strlen(getcmdline())>0?''' . s:mapping . ''':''' . s:mappings[s:key][1] . ''''
+                    exe 'cnoremap <expr> ' . s:mapping . ' ' .
+                      \ 'strlen(getcmdline())>0?''' . s:mapping . ''':''' . s:mappings[s:key][1] . ''''
                 elseif exists('g:EmacsCommandLine' . s:key . 'NoMapAtEnd') && g:EmacsCommandLine{s:key}NoMapAtEnd == 1
-                    exe 'cnoremap <expr> ' . s:mapping . ' getcmdpos()>strlen(getcmdline())?''' . s:mapping . ''':''' . s:mappings[s:key][1] . ''''
+                    exe 'cnoremap <expr> ' . s:mapping . ' ' .
+                      \ 'getcmdpos()>strlen(getcmdline())?''' . s:mapping . ''':''' . s:mappings[s:key][1] . ''''
                 else
                     exe 'cnoremap ' . s:mapping . ' ' . s:mappings[s:key][1]
                 endif
@@ -60,9 +62,11 @@ for s:key in keys(s:mappings)
             endfor
         else
             if exists('g:EmacsCommandLine' . s:key . 'MapOnlyWhenEmpty') && g:EmacsCommandLine{s:key}MapOnlyWhenEmpty == 1
-                exe 'cnoremap <expr> ' . g:EmacsCommandLine{s:key}Map . ' strlen(getcmdline())>0?''' . g:EmacsCommandLine{s:key}Map . ''':''' . s:mappings[s:key][1] . ''''
+                exe 'cnoremap <expr> ' . g:EmacsCommandLine{s:key}Map . ' ' .
+                  \ 'strlen(getcmdline())>0?''' . g:EmacsCommandLine{s:key}Map . ''':''' . s:mappings[s:key][1] . ''''
             elseif exists('g:EmacsCommandLine' . s:key . 'NoMapAtEnd') && g:EmacsCommandLine{s:key}NoMapAtEnd == 1
-                exe 'cnoremap <expr> ' . g:EmacsCommandLine{s:key}Map . ' getcmdpos()>strlen(getcmdline())?''' . g:EmacsCommandLine{s:key}Map . ''':''' . s:mappings[s:key][1] . ''''
+                exe 'cnoremap <expr> ' . g:EmacsCommandLine{s:key}Map . ' ' .
+                  \ 'getcmdpos()>strlen(getcmdline())?''' . g:EmacsCommandLine{s:key}Map . ''':''' . s:mappings[s:key][1] . ''''
             else
                 exe 'cnoremap ' . g:EmacsCommandLine{s:key}Map . ' ' . s:mappings[s:key][1]
             endif
@@ -237,7 +241,7 @@ endfunction
 function! <SID>TransposeWord()
     let l:loc = strpart(getcmdline(), 0, getcmdpos() - 1) . substitute(strpart(getcmdline(), getcmdpos() - 1), '\v(.).*', '\1', '')
     let l:roc = strpart(getcmdline(), strlen(l:loc))
-    if !(l:loc =~ '\v^\s*\S+\s')
+    if l:loc !~ '\v^\s*\S+\s')
         return getcmdline()
     endi
     if l:loc =~ '\s$'
@@ -297,7 +301,7 @@ function! <SID>Undo()
     if len(s:oldcmdline) == 0
         return getcmdline()
     endif
-    if getcmdline() == s:oldcmdline[0][0]
+    if getcmdline() ==# s:oldcmdline[0][0]
         call remove(s:oldcmdline, 0)
         if len(s:oldcmdline) == 0
             return getcmdline()
@@ -309,28 +313,65 @@ function! <SID>Undo()
     return l:ret
 endfunction
 
+let s:yanklastargno = -1
+let s:yanklastargloc = ''
+let s:yanklastargroc = ''
+let s:yanklastargres = ''
+let s:yanklastargcmdpos = 0
+let s:argregex = '\v.{-}(\s|^)("([^"]+|\\.)*"|''([^'']+|'''')*''|(\S+|\\\s)*)\s*$'
+function! <SID>YankLastArg()
+    if histnr('cmd') < 1
+        return getcmdline()
+    endif
+    if s:yanklastargno < 1 ||
+     \ getcmdline() != s:yanklastargloc . s:yanklastargres . s:yanklastargroc ||
+     \ getcmdpos() != s:yanklastargcmdpos + strlen(s:yanklastargres)
+        let s:yanklastargno = histnr('cmd')
+        let s:yanklastargloc = strpart(getcmdline(), 0, getcmdpos() - 1)
+        let s:yanklastargroc = strpart(getcmdline(), getcmdpos() - 1)
+        let s:yanklastargres = ''
+        let s:yanklastargcmdpos = getcmdpos()
+    else
+        let s:yanklastargno -= 1
+    endif
+    while 0 < s:yanklastargno &&
+        \ ( histget('cmd', s:yanklastargno) !~ '\S' ||
+        \   substitute(histget('cmd', s:yanklastargno), s:argregex, '\2', '') ==# s:yanklastargres
+        \   )
+        let s:yanklastargno = s:yanklastargno - 1
+    endwhile
+    if s:yanklastargno < 1
+        return s:yanklastargloc . s:yanklastargroc
+    endif
+    let s:yanklastargres = substitute(histget('cmd', s:yanklastargno), s:argregex, '\2', '')
+    call setcmdpos(s:yanklastargcmdpos + strlen(s:yanklastargres))
+    return s:yanklastargloc . s:yanklastargres . s:yanklastargroc
+endfunction
+
 let s:functions = {
-    \'ForwardWord':                 '<M-f>',
-    \'BackwardWord':                '<M-b>',
-    \'DeleteChar':                  ['<Del>', '<C-D>'],
-    \'BackwardDeleteChar':          ['<BS>', '<C-H>'],
-    \'KillLine':                    '<C-K>',
-    \'BackwardKillLine':            '<C-U>',
-    \'KillWord':                    '<M-d>',
-    \'DeleteBackwardsToWhiteSpace': '<C-W>',
-    \'BackwardKillWord':            '<M-BS>',
-    \'TransposeChar':               '<C-T>',
-    \'TransposeWord':               '<M-t>',
-    \'Yank':                        '<C-Y>',
-    \'Undo':                        ['<C-_>', '<C-X><C-U>'],
-    \'ToggleExternalCommand':       '<C-Z>'
-    \}
+  \ 'ForwardWord':                 '<M-f>',
+  \ 'BackwardWord':                '<M-b>',
+  \ 'DeleteChar':                  ['<Del>', '<C-D>'],
+  \ 'BackwardDeleteChar':          ['<BS>', '<C-H>'],
+  \ 'KillLine':                    '<C-K>',
+  \ 'BackwardKillLine':            '<C-U>',
+  \ 'KillWord':                    '<M-d>',
+  \ 'DeleteBackwardsToWhiteSpace': '<C-W>',
+  \ 'BackwardKillWord':            '<M-BS>',
+  \ 'TransposeChar':               '<C-T>',
+  \ 'TransposeWord':               '<M-t>',
+  \ 'Yank':                        '<C-Y>',
+  \ 'Undo':                        ['<C-_>', '<C-X><C-U>'],
+  \ 'YankLastArg':                 ['<M-.>', '<M-_>'],
+  \ 'ToggleExternalCommand':       '<C-Z>'
+  \ }
 if !has('gui_running') && !has('nvim')
     let s:functions['ForwardWord']      = '<Esc>f'
     let s:functions['BackwardWord']     = '<Esc>b'
     let s:functions['KillWord']         = '<Esc>d'
     let s:functions['BackwardKillWord'] = '<Esc><BS>'
     let s:functions['TransposeWord']    = '<Esc>t'
+    let s:functions['YankLastArg']      = ['<Esc>.', '<Esc>_']
 endif
 for s:key in keys(s:functions)
     if !exists('g:EmacsCommandLine' . s:key . 'Disable') || g:EmacsCommandLine{s:key}Disable != 1
@@ -341,9 +382,11 @@ for s:key in keys(s:functions)
         if type(g:EmacsCommandLine{s:key}Map) == 3
             for s:mapping in g:EmacsCommandLine{s:key}Map
                 if exists('g:EmacsCommandLine' . s:key . 'MapOnlyWhenEmpty') && g:EmacsCommandLine{s:key}MapOnlyWhenEmpty == 1
-                    exe 'cnoremap <expr> ' . s:mapping . ' strlen(getcmdline())>0?''' . s:mapping . ''':''<C-\>e<SID>' . s:key . '()<CR>'''
+                    exe 'cnoremap <expr> ' . s:mapping . ' ' .
+                      \ 'strlen(getcmdline())>0?''' . s:mapping . ''':''<C-\>e<SID>' . s:key . '()<CR>'''
                 elseif exists('g:EmacsCommandLine' . s:key . 'NoMapAtEnd') && g:EmacsCommandLine{s:key}NoMapAtEnd == 1
-                    exe 'cnoremap <expr> ' . s:mapping . ' getcmdpos()>strlen(getcmdline())?''' . s:mapping . ''':''<C-\>e<SID>' . s:key . '()<CR>'''
+                    exe 'cnoremap <expr> ' . s:mapping . ' ' .
+                      \ 'getcmdpos()>strlen(getcmdline())?''' . s:mapping . ''':''<C-\>e<SID>' . s:key . '()<CR>'''
                 else
                     exe 'cnoremap ' . s:mapping . ' <C-\>e<SID>' . s:key . '()<CR>'
                 endif
@@ -353,9 +396,11 @@ for s:key in keys(s:functions)
             endfor
         else
             if exists('g:EmacsCommandLine' . s:key . 'MapOnlyWhenEmpty') && g:EmacsCommandLine{s:key}MapOnlyWhenEmpty == 1
-                exe 'cnoremap <expr> ' . g:EmacsCommandLine{s:key}Map . ' strlen(getcmdline())>0?''' . g:EmacsCommandLine{s:key}Map . ''':''<C-\>e<SID>' . s:key . '()<CR>'''
+                exe 'cnoremap <expr> ' . g:EmacsCommandLine{s:key}Map . ' ' .
+                  \ 'strlen(getcmdline())>0?''' . g:EmacsCommandLine{s:key}Map . ''':''<C-\>e<SID>' . s:key . '()<CR>'''
             elseif exists('g:EmacsCommandLine' . s:key . 'NoMapAtEnd') && g:EmacsCommandLine{s:key}NoMapAtEnd == 1
-                exe 'cnoremap <expr> ' . g:EmacsCommandLine{s:key}Map . ' getcmdpos()>strlen(getcmdline())?''' . g:EmacsCommandLine{s:key}Map . ''':''<C-\>e<SID>' . s:key . '()<CR>'''
+                exe 'cnoremap <expr> ' . g:EmacsCommandLine{s:key}Map . ' ' .
+                  \ 'getcmdpos()>strlen(getcmdline())?''' . g:EmacsCommandLine{s:key}Map . ''':''<C-\>e<SID>' . s:key . '()<CR>'''
             else
                 exe 'cnoremap ' . g:EmacsCommandLine{s:key}Map . ' <C-\>e<SID>' . s:key . '()<CR>'
             endif
